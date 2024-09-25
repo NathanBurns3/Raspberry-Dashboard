@@ -29,6 +29,7 @@ class ClockFrame(tk.Frame):
     
     def create_calendar(self):
         now = datetime.now()
+        calendar.setfirstweekday(calendar.SUNDAY)
         cal = calendar.monthcalendar(now.year, now.month)
         
         month_label = tk.Label(self.calendar_frame, text=now.strftime("%B"), fg="red", bg="black", font=("Arial Black", 42))
@@ -37,9 +38,10 @@ class ClockFrame(tk.Frame):
         days_frame = tk.Frame(self.calendar_frame, bg='black')
         days_frame.pack(pady=15)
         
-        days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
+        days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
         for i, day in enumerate(days):
-            day_label = tk.Label(days_frame, text=day, fg="white", bg="black", font=("Arial", 20, "bold"), width=3)
+            fg_color = "#bfbfbf" if day in ["Sun", "Sat"] else "white"
+            day_label = tk.Label(days_frame, text=day, fg=fg_color, bg="black", font=("Arial", 20, "bold"), width=3)
             day_label.grid(row=0, column=i, padx=4)
         
         for week in cal:
@@ -47,14 +49,14 @@ class ClockFrame(tk.Frame):
             week_frame.pack(pady=5)
             for i, day in enumerate(week):
                 day_str = str(day) if day != 0 else ""
-                day_label = tk.Label(week_frame, text=day_str, fg="white", bg="black", font=("Arial", 20), width=3)
+                fg_color = "#bfbfbf" if i in [0, 6] else "white"
+                day_label = tk.Label(week_frame, text=day_str, fg=fg_color, bg="black", font=("Arial", 20), width=3)
                 day_label.grid(row=1, column=i, padx=4)
                 
                 if day == now.day:
-                    day_label.config(fg="red")
                     day_label.bind("<Configure>", lambda e, lbl=day_label: lbl.config(highlightbackground="red", highlightcolor="red", highlightthickness=2))
+                    day_label.config(fg="red")
 
-    
     def update_clock(self):
         self.canvas.delete("all")
         self.draw_clock_face()
