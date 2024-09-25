@@ -49,6 +49,10 @@ class ClockFrame(tk.Frame):
                 day_str = str(day) if day != 0 else ""
                 day_label = tk.Label(week_frame, text=day_str, fg="white", bg="black", font=("Arial", 18), width=3)
                 day_label.grid(row=1, column=i, padx=4)
+                
+                if day == now.day:
+                    day_label.config(fg="red")
+                    day_label.bind("<Configure>", lambda e, lbl=day_label: lbl.config(highlightbackground="red", highlightcolor="red", highlightthickness=2))
 
     
     def update_clock(self):
