@@ -21,7 +21,7 @@ class ClockFrame(tk.Frame):
         self.right_frame.pack(side="right", fill="both", expand=True)
         
         self.calendar_frame = tk.Frame(self.right_frame, bg='black')
-        self.calendar_frame.place(relx=0.5, rely=0.5, anchor="center")
+        self.calendar_frame.place(relx=0.5, rely=0.475, anchor="center")
         
         self.create_calendar()
         
@@ -31,7 +31,7 @@ class ClockFrame(tk.Frame):
         now = datetime.now()
         cal = calendar.monthcalendar(now.year, now.month)
         
-        month_label = tk.Label(self.calendar_frame, text=now.strftime("%B"), fg="red", bg="black", font=("Arial Black", 26))
+        month_label = tk.Label(self.calendar_frame, text=now.strftime("%B"), fg="red", bg="black", font=("Arial Black", 42))
         month_label.pack(pady=20)
         
         days_frame = tk.Frame(self.calendar_frame, bg='black')
@@ -39,7 +39,7 @@ class ClockFrame(tk.Frame):
         
         days = ["Mon", "Tue", "Wed", "Thu", "Fri", "Sat", "Sun"]
         for i, day in enumerate(days):
-            day_label = tk.Label(days_frame, text=day, fg="white", bg="black", font=("Arial", 18, "bold"), width=3)
+            day_label = tk.Label(days_frame, text=day, fg="white", bg="black", font=("Arial", 20, "bold"), width=3)
             day_label.grid(row=0, column=i, padx=4)
         
         for week in cal:
@@ -47,7 +47,7 @@ class ClockFrame(tk.Frame):
             week_frame.pack(pady=5)
             for i, day in enumerate(week):
                 day_str = str(day) if day != 0 else ""
-                day_label = tk.Label(week_frame, text=day_str, fg="white", bg="black", font=("Arial", 18), width=3)
+                day_label = tk.Label(week_frame, text=day_str, fg="white", bg="black", font=("Arial", 20), width=3)
                 day_label.grid(row=1, column=i, padx=4)
                 
                 if day == now.day:
