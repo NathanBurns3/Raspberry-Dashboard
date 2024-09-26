@@ -14,7 +14,10 @@ def fetch_quotes():
     if response.status_code == requests.codes.ok:
         quote_data = json.loads(response.text)
         item = quote_data[0]
-        quote = Quote(item['quote'], item['author'], item['category'])
+        quote = {
+            'quote': item['quote'],
+            'author': item['author']
+        }
         return quote
     else:
         print("Error:", response.status_code, response.text)

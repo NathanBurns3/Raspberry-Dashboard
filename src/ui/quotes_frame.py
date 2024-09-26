@@ -24,5 +24,5 @@ class QuotesFrame(tk.Frame):
 
     def display_quote(self):
         quote = fetch_quotes()
-        self.quote_label.config(text=quote.quote)
-        self.author_label.config(text=quote.author)
+        self.quote_label.config(text=quote["quote"])
+        self.author_label.config(text=quote["author"])
