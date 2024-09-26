@@ -1,6 +1,5 @@
 import requests
 import json
-from models.quotes import Quote
 from dotenv import load_dotenv
 import os
 
