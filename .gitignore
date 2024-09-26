@@ -1,3 +1,5 @@
 TODO.txt
 __pycache__/
 .env
+./assets/images/
+.DS_Store
