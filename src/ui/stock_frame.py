@@ -19,16 +19,38 @@ class StockFrame(tk.Frame):
             widget.destroy()
         
         for index, stock in enumerate(stocks):
-            row = index // 3
-            column = index % 3
-            stock_label = tk.Label(
+            row = index // 3 * 2
+            column = index % 3 * 2
+            
+            symbol_label = tk.Label(
                 self.stock_list_frame, 
-                text=f"{stock['name']}: {stock['symbol']}: ${stock['price']} ({stock['percentage_change']}%)",
+                text=f"{stock['symbol']}",
                 font=("Helvetica", 12)
             )
-            stock_label.grid(row=row, column=column, padx=10, pady=5, sticky="nsew")
+            symbol_label.grid(row=row, column=column, padx=0, pady=0, sticky="se")
+            
+            price_label = tk.Label(
+                self.stock_list_frame, 
+                text=f"${stock['price']}",
+                font=("Helvetica", 12)
+            )
+            price_label.grid(row=row, column=column+1, padx=0, pady=0, sticky="sw")
+            
+            name_label = tk.Label(
+                self.stock_list_frame, 
+                text=f"{stock['name']}",
+                font=("Helvetica", 12)
+            )
+            name_label.grid(row=row+1, column=column, padx=0, pady=0, sticky="ne")
+            
+            percentage_change_label = tk.Label(
+                self.stock_list_frame, 
+                text=f"{stock['percentage_change']}%",
+                font=("Helvetica", 12)
+            )
+            percentage_change_label.grid(row=row+1, column=column+1, padx=0, pady=0, sticky="nw")
         
-        for i in range(3):
+        for i in range(6):
             self.stock_list_frame.grid_columnconfigure(i, weight=1)
-        for i in range(2):
+        for i in range(len(stocks) * 2 // 3):
             self.stock_list_frame.grid_rowconfigure(i, weight=1)
