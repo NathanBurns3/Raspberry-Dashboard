@@ -1,13 +1,13 @@
-import tkinter as tk
+import customtkinter as ctk
 from utils.data.fetch_stock import fetch_stock
 
-class StockFrame(tk.Frame):
+class StockFrame(ctk.CTkFrame):
     def __init__(self, parent, controller):
         super().__init__(parent)
         self.controller = controller
-        self.configure(width=800, height=480)
+        self.configure(width=800, height=480, fg_color="black")
         
-        self.stock_list_frame = tk.Frame(self)
+        self.stock_list_frame = ctk.CTkFrame(self, fg_color="black")
         self.stock_list_frame.pack(fill="both", expand=True)
         
         self.update_stock_list()
@@ -19,42 +19,47 @@ class StockFrame(tk.Frame):
             widget.destroy()
         
         for index, stock in enumerate(stocks):
-            row = index // 3 * 2
-            column = index % 3 * 2
+            row = index // 2 * 2
+            column = index % 2 * 3
             
-            symbol_label = tk.Label(
+            symbol_label = ctk.CTkLabel(
                 self.stock_list_frame, 
                 text=f"{stock['symbol']}",
-                font=("Helvetica", 28)
+                font=ctk.CTkFont(family="Helvetica", size=28),
+                text_color="white"
             )
-            symbol_label.grid(row=row, column=column, padx=0, pady=0, sticky="se")
+            symbol_label.grid(row=row, column=column, padx=5, pady=5, sticky="sew")
             
-            price_label = tk.Label(
+            price_label = ctk.CTkLabel(
                 self.stock_list_frame, 
                 text=f"${stock['price']}",
-                font=("Helvetica", 24)
+                font=ctk.CTkFont(family="Helvetica", size=24),
+                text_color="white"
             )
-            price_label.grid(row=row, column=column+1, padx=0, pady=0, sticky="sw")
+            price_label.grid(row=row, column=column+1, padx=5, pady=5, sticky="sew")
             
-            name_label = tk.Label(
+            name_label = ctk.CTkLabel(
                 self.stock_list_frame, 
                 text=f"{stock['name']}",
-                font=("Helvetica", 20)
+                font=ctk.CTkFont(family="Helvetica", size=20),
+                text_color="white"
             )
-            name_label.grid(row=row+1, column=column, padx=0, pady=0, sticky="ne")
+            name_label.grid(row=row+1, column=column, padx=5, pady=5, sticky="new")
             
             percentage_change = stock['percentage_change']
             bg_color = "green" if percentage_change >= 0 else "red"
             
-            percentage_change_label = tk.Label(
+            percentage_change_label = ctk.CTkLabel(
                 self.stock_list_frame, 
                 text=f"{percentage_change}%",
-                font=("Helvetica", 20),
-                bg=bg_color
+                font=ctk.CTkFont(family="Helvetica", size=20),
+                fg_color=bg_color,
+                text_color="white",
+                corner_radius=10
             )
-            percentage_change_label.grid(row=row+1, column=column+1, padx=0, pady=0, sticky="nw")
+            percentage_change_label.grid(row=row+1, column=column+1, padx=5, pady=5, sticky="new")
         
         for i in range(6):
             self.stock_list_frame.grid_columnconfigure(i, weight=1)
-        for i in range(len(stocks) * 2 // 3):
+        for i in range(len(stocks) * 2 // 2):
             self.stock_list_frame.grid_rowconfigure(i, weight=1)
