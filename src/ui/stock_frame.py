@@ -25,28 +25,32 @@ class StockFrame(tk.Frame):
             symbol_label = tk.Label(
                 self.stock_list_frame, 
                 text=f"{stock['symbol']}",
-                font=("Helvetica", 12)
+                font=("Helvetica", 28)
             )
             symbol_label.grid(row=row, column=column, padx=0, pady=0, sticky="se")
             
             price_label = tk.Label(
                 self.stock_list_frame, 
                 text=f"${stock['price']}",
-                font=("Helvetica", 12)
+                font=("Helvetica", 24)
             )
             price_label.grid(row=row, column=column+1, padx=0, pady=0, sticky="sw")
             
             name_label = tk.Label(
                 self.stock_list_frame, 
                 text=f"{stock['name']}",
-                font=("Helvetica", 12)
+                font=("Helvetica", 20)
             )
             name_label.grid(row=row+1, column=column, padx=0, pady=0, sticky="ne")
             
+            percentage_change = stock['percentage_change']
+            bg_color = "green" if percentage_change >= 0 else "red"
+            
             percentage_change_label = tk.Label(
                 self.stock_list_frame, 
-                text=f"{stock['percentage_change']}%",
-                font=("Helvetica", 12)
+                text=f"{percentage_change}%",
+                font=("Helvetica", 20),
+                bg=bg_color
             )
             percentage_change_label.grid(row=row+1, column=column+1, padx=0, pady=0, sticky="nw")
         
