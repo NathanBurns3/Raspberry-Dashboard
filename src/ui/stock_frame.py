@@ -25,7 +25,7 @@ class StockFrame(ctk.CTkFrame):
             symbol_label = ctk.CTkLabel(
                 self.stock_list_frame, 
                 text=f"{stock['symbol']}",
-                font=ctk.CTkFont(family="Helvetica", size=28),
+                font=ctk.CTkFont(family="Subway Ticker", size=30, weight="bold"),
                 text_color="white"
             )
             symbol_label.grid(row=row, column=column, padx=5, pady=5, sticky="sew")
@@ -33,7 +33,7 @@ class StockFrame(ctk.CTkFrame):
             price_label = ctk.CTkLabel(
                 self.stock_list_frame, 
                 text=f"${stock['price']}",
-                font=ctk.CTkFont(family="Helvetica", size=24),
+                font=ctk.CTkFont(family="Subway Ticker", size=26, weight="bold"),
                 text_color="white"
             )
             price_label.grid(row=row, column=column+1, padx=5, pady=5, sticky="sew")
@@ -41,7 +41,7 @@ class StockFrame(ctk.CTkFrame):
             name_label = ctk.CTkLabel(
                 self.stock_list_frame, 
                 text=f"{stock['name']}",
-                font=ctk.CTkFont(family="Helvetica", size=20),
+                font=ctk.CTkFont(family="Roboto Slab", size=22, weight="normal"),
                 text_color="white"
             )
             name_label.grid(row=row+1, column=column, padx=5, pady=5, sticky="new")
@@ -52,7 +52,7 @@ class StockFrame(ctk.CTkFrame):
             percentage_change_label = ctk.CTkLabel(
                 self.stock_list_frame, 
                 text=f"{percentage_change}%",
-                font=ctk.CTkFont(family="Helvetica", size=20),
+                font=ctk.CTkFont(family="Subway Ticker", size=22, weight="normal"),
                 fg_color=bg_color,
                 text_color="white",
                 corner_radius=10
