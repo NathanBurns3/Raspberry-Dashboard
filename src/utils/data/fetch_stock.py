@@ -6,11 +6,24 @@ import random
 load_dotenv()
 
 def fetch_stock():
-    required_stocks = ["DGRO", "VFIAX"]
-    other_stocks = ["AAPL", "GOOGL", "AMZN", "MSFT", "NVDA", "TSLA", "META", "NFLX"]
+    required_stocks = [
+        ("iShares DG ETF", "DGRO"),
+        ("Vanguard 500 Fund", "VFIAX")
+    ]
+    other_stocks = [
+        ("Apple", "AAPL"),
+        ("Google", "GOOGL"),
+        ("Amazon", "AMZN"),
+        ("Microsoft", "MSFT"),
+        ("NVIDIA", "NVDA"),
+        ("Tesla", "TSLA"),
+        ("Meta", "META"),
+        ("Netflix", "NFLX")
+    ]
     random_stocks = random.sample(other_stocks, 4)
     all_stocks = required_stocks + random_stocks
-    stocks_string = ",".join(all_stocks)
+    stock_ids = [stock[1] for stock in all_stocks]
+    stocks_string = ",".join(stock_ids)
     api_key = os.getenv('STOCK_API_KEY')
     api_url = f"https://api.twelvedata.com/time_series?symbol={stocks_string}&interval=1day&outputsize=2&apikey={api_key}"
     response = requests.get(api_url)
@@ -25,9 +38,10 @@ def fetch_stock():
             previous_close_price = round(float(previous_stock_values['close']), 2)
             percentage_change = round(((current_price - previous_close_price) / previous_close_price) * 100, 2)
             stocks.append({
-                'name': stock_data['meta']['symbol'],
+                'symbol': stock_data['meta']['symbol'],
+                'name': all_stocks[stock_ids.index(stock_data['meta']['symbol'])][0],
                 'price': current_price,
                 'percentage_change': percentage_change
             })
-    
+
     return stocks
