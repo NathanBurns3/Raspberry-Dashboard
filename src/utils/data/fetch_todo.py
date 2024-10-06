@@ -1,3 +1,7 @@
 def fetch_todo():
-    # Nathan: update with some sort of db
-    return
+    tasks = [
+        {"name": "Figure out investments", "completed": False},
+        {"name": "Make frames", "completed": False},
+        {"name": "Make want list", "completed": True}
+    ]
+    return tasks
