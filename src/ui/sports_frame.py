@@ -18,13 +18,13 @@ class SportsFrame(ctk.CTkFrame):
     def configure_grid(self):
         self.grid_rowconfigure(0, weight=1, minsize=50)
         for i in range(1, 4):
-            self.grid_rowconfigure(i, weight=1, minsize=138)
+            self.grid_rowconfigure(i, weight=1, minsize=140)
         for j in range(2):
             self.grid_columnconfigure(j, weight=1, minsize=400)
         self.bind("<Configure>", self.enforce_max_constraints)
 
     def enforce_max_constraints(self, event):
-        max_row_height = min(138, self.winfo_height() // 3)
+        max_row_height = min(140, self.winfo_height() // 3)
         for i in range(1, 4):
             self.grid_rowconfigure(i, minsize=max_row_height)
         max_col_width = min(400, self.winfo_width() // 2)
@@ -36,7 +36,7 @@ class SportsFrame(ctk.CTkFrame):
             widget.destroy()
 
         label = ctk.CTkLabel(self, text=f"SPORTS - {self.data_type}", font=ctk.CTkFont(family="Subway Ticker", size=40))
-        label.grid(row=0, column=0, columnspan=2, pady=(15, 10))
+        label.grid(row=0, column=0, columnspan=2, pady=(15, 5))
 
         if self.data_type == "FAVORITES":
             data_list = fetch_favorites()
@@ -62,25 +62,63 @@ class SportsFrame(ctk.CTkFrame):
         num_rows = (num_games + 1) // 2
 
         for i in range(1, num_rows + 1):
-            self.grid_rowconfigure(i, weight=1, minsize=138)
+            self.grid_rowconfigure(i, weight=1, minsize=140)
         for j in range(2):
             self.grid_columnconfigure(j, weight=1, minsize=400)
 
         for index in range(num_games):
             row = (index // 2) + 1
             col = index % 2
+            print(f"Displaying game {data_list[index]}")
+            print()
             self.display_game_item(data_list[index], row, col)
 
     def display_game_item(self, item, row, col):
         frame = ctk.CTkFrame(self)
         frame.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")
-
+    
         if "home_team" in item and "away_team" in item:
-            home_logo = ctk.CTkLabel(frame, text="", image=self.load_image(item["home_team_logo"]))
-            home_logo.pack(side="left", padx=10)
-            away_logo = ctk.CTkLabel(frame, text="", image=self.load_image(item["away_team_logo"]))
-            away_logo.pack(side="right", padx=10)
+            if self.data_type in ["NCAAF", "NCAAM"]:
+                home_team_rank = item.get('home_team_rank', '')
+                away_team_rank = item.get('away_team_rank', '')
             
+                if home_team_rank and int(home_team_rank) <= 25:
+                    home_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
+                    home_frame.pack(side="right", padx=10, pady=(17, 0))
+                    home_logo = ctk.CTkLabel(home_frame, text="", image=self.load_image(item["home_team_logo"]))
+                    home_logo.pack(side="top")
+                    home_rank = ctk.CTkLabel(
+                        home_frame, 
+                        text=f"#{home_team_rank}", 
+                        font=ctk.CTkFont(family="Subway Ticker", size=16, weight="bold"),
+                        fg_color=frame.cget("fg_color")  # Match the background color
+                    )
+                    home_rank.pack(side="bottom")
+                else:
+                    home_logo = ctk.CTkLabel(frame, text="", image=self.load_image(item["home_team_logo"]))
+                    home_logo.pack(side="right", padx=10)
+            
+                if away_team_rank and int(away_team_rank) <= 25:
+                    away_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
+                    away_frame.pack(side="left", padx=10, pady=(17, 0))
+                    away_logo = ctk.CTkLabel(away_frame, text="", image=self.load_image(item["away_team_logo"]))
+                    away_logo.pack(side="top")
+                    away_rank = ctk.CTkLabel(
+                        away_frame, 
+                        text=f"#{away_team_rank}", 
+                        font=ctk.CTkFont(family="Subway Ticker", size=16, weight="bold"),
+                        fg_color=frame.cget("fg_color")  # Match the background color
+                    )
+                    away_rank.pack(side="bottom")
+                else:
+                    away_logo = ctk.CTkLabel(frame, text="", image=self.load_image(item["away_team_logo"]))
+                    away_logo.pack(side="left", padx=10)
+            else:
+                home_logo = ctk.CTkLabel(frame, text="", image=self.load_image(item["home_team_logo"]))
+                home_logo.pack(side="left", padx=10)
+                away_logo = ctk.CTkLabel(frame, text="", image=self.load_image(item["away_team_logo"]))
+                away_logo.pack(side="right", padx=10)
+    
             game_time = item.get('game_time', '')
             formatted_time = self.format_game_time(game_time)
             game_info = ctk.CTkLabel(frame, text=f"{item.get('score', '')} {formatted_time}", font=ctk.CTkFont(family="Subway Ticker", size=20))
@@ -91,7 +129,6 @@ class SportsFrame(ctk.CTkFrame):
             dt = datetime.strptime(game_time, "%Y-%m-%dT%H:%MZ")
             return dt.strftime("%m/%d %I:%M %p")
         except ValueError:
-            print(f"Error parsing game time: {game_time}")
             return game_time
 
     def load_image(self, url):
