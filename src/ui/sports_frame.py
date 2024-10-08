@@ -4,7 +4,7 @@ import random
 from PIL import Image, ImageTk
 import requests
 from io import BytesIO
-from datetime import datetime
+from datetime import datetime, timedelta
 from utils.data.fetch_sports import fetch_favorites, fetch_nfl_scores, fetch_ncaaf_scores, fetch_ncaam_scores, fetch_nba_scores, fetch_mlb_scores, fetch_ufc_scores
 
 class SportsFrame(ctk.CTkFrame):
@@ -76,12 +76,12 @@ class SportsFrame(ctk.CTkFrame):
     def display_game_item(self, item, row, col):
         frame = ctk.CTkFrame(self)
         frame.grid(row=row, column=col, padx=10, pady=10, sticky="nsew")
-    
+
         if "home_team" in item and "away_team" in item:
             if self.data_type in ["NCAAF", "NCAAM"]:
                 home_team_rank = item.get('home_team_rank', '')
                 away_team_rank = item.get('away_team_rank', '')
-            
+
                 if home_team_rank and int(home_team_rank) <= 25:
                     home_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
                     home_frame.pack(side="right", padx=10, pady=(17, 0))
@@ -91,13 +91,13 @@ class SportsFrame(ctk.CTkFrame):
                         home_frame, 
                         text=f"#{home_team_rank}", 
                         font=ctk.CTkFont(family="Subway Ticker", size=16, weight="bold"),
-                        fg_color=frame.cget("fg_color")  # Match the background color
+                        fg_color=frame.cget("fg_color")
                     )
                     home_rank.pack(side="bottom")
                 else:
                     home_logo = ctk.CTkLabel(frame, text="", image=self.load_image(item["home_team_logo"]))
                     home_logo.pack(side="right", padx=10)
-            
+
                 if away_team_rank and int(away_team_rank) <= 25:
                     away_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
                     away_frame.pack(side="left", padx=10, pady=(17, 0))
@@ -107,7 +107,7 @@ class SportsFrame(ctk.CTkFrame):
                         away_frame, 
                         text=f"#{away_team_rank}", 
                         font=ctk.CTkFont(family="Subway Ticker", size=16, weight="bold"),
-                        fg_color=frame.cget("fg_color")  # Match the background color
+                        fg_color=frame.cget("fg_color")
                     )
                     away_rank.pack(side="bottom")
                 else:
@@ -118,15 +118,32 @@ class SportsFrame(ctk.CTkFrame):
                 home_logo.pack(side="left", padx=10)
                 away_logo = ctk.CTkLabel(frame, text="", image=self.load_image(item["away_team_logo"]))
                 away_logo.pack(side="right", padx=10)
-    
+
             game_time = item.get('game_time', '')
             formatted_time = self.format_game_time(game_time)
-            game_info = ctk.CTkLabel(frame, text=f"{item.get('score', '')} {formatted_time}", font=ctk.CTkFont(family="Subway Ticker", size=20))
-            game_info.pack(side="top", fill="both", expand=True)
+            
+            if item.get('is_game_still_playing', '') == True:
+                info_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
+                info_frame.pack(side="top", fill="both", expand=True)
+                
+                game_info = ctk.CTkLabel(info_frame, text=f"{item.get('score', '')} {formatted_time}", font=ctk.CTkFont(family="Subway Ticker", size=20))
+                game_info.pack(side="top", fill="both", expand=True, pady=(25, 0))
+                
+                period = item.get('period', '')
+                
+                inning_label = ctk.CTkLabel(info_frame, text=period, font=ctk.CTkFont(family="Subway Ticker", size=16))
+                inning_label.pack(side="top", fill="both", expand=True, pady=(0, 25))
+            else:
+                info_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
+                info_frame.pack(side="top", fill="both", expand=True)
+            
+                game_info = ctk.CTkLabel(info_frame, text=f"{item.get('score', '')} {formatted_time}", font=ctk.CTkFont(family="Subway Ticker", size=20))
+                game_info.pack(side="top", fill="both", expand=True)
 
     def format_game_time(self, game_time):
         try:
             dt = datetime.strptime(game_time, "%Y-%m-%dT%H:%MZ")
+            dt = dt - timedelta(hours=4)
             return dt.strftime("%m/%d %I:%M %p")
         except ValueError:
             return game_time
