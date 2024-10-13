@@ -1,7 +1,7 @@
 import tkinter as tk
 import customtkinter as ctk
 import random
-from PIL import Image, ImageTk
+from PIL import Image, ImageTk, ImageEnhance
 import requests
 from io import BytesIO
 from datetime import datetime, timedelta
@@ -69,8 +69,6 @@ class SportsFrame(ctk.CTkFrame):
         for index in range(num_games):
             row = (index // 2) + 1
             col = index % 2
-            print(f"Displaying game {data_list[index]}")
-            print()
             self.display_game_item(data_list[index], row, col)
 
     def display_game_item(self, item, row, col):
@@ -139,6 +137,59 @@ class SportsFrame(ctk.CTkFrame):
             
                 game_info = ctk.CTkLabel(info_frame, text=f"{item.get('score', '')} {formatted_time}", font=ctk.CTkFont(family="Subway Ticker", size=20))
                 game_info.pack(side="top", fill="both", expand=True)
+        elif self.data_type == "UFC":
+            fighters = item.get('fighters', [])
+            fighter1_name = fighters[0].get('name', '')
+            fighter2_name = fighters[1].get('name', '')
+
+            fighter1_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
+            fighter1_frame.pack(side="left", padx=10, pady=(17, 0))
+            fighter1_flag = ctk.CTkLabel(fighter1_frame, text=f"{fighter1_name}", font=ctk.CTkFont(family="Subway Ticker", size=16, weight="bold"), image=self.load_image(fighters[0].get('flag', ''), 0.25))
+            fighter1_flag.pack(side="top")
+            fighter1_record = ctk.CTkLabel(
+                fighter1_frame, 
+                text=f"{fighters[0].get('record', '')}",
+                font=ctk.CTkFont(family="Subway Ticker", size=16),
+                fg_color=frame.cget("fg_color")
+            )
+            fighter1_record.pack(side="bottom")
+            
+            fight_time = item.get('date_time', '')
+            formatted_time = self.format_game_time(fight_time)
+            
+            time_label = ctk.CTkLabel(frame, text=formatted_time, font=ctk.CTkFont(family="Subway Ticker", size=16, weight="bold"), fg_color=frame.cget("fg_color"))
+            time_label.pack(side="left", padx=10, pady=(17, 0))
+
+            fighter2_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
+            fighter2_frame.pack(side="left", padx=10, pady=(17, 0))
+            fighter2_flag = ctk.CTkLabel(fighter2_frame, text=f"{fighter2_name}", font=ctk.CTkFont(family="Subway Ticker", size=16, weight="bold"), image=self.load_image(fighters[1].get('flag', ''), 0.25))
+            fighter2_flag.pack(side="top")
+            fighter2_record = ctk.CTkLabel(
+                fighter2_frame, 
+                text=f"{fighters[1].get('record', '')}",
+                font=ctk.CTkFont(family="Subway Ticker", size=16),
+                fg_color=frame.cget("fg_color")
+            )
+            fighter2_record.pack(side="bottom")
+
+            if item.get('is_fight_completed', '') == True:
+                info_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
+                info_frame.pack(side="top", fill="both", expand=True)
+                
+                fight_info = ctk.CTkLabel(info_frame, text=f"{item.get('score', '')}", font=ctk.CTkFont(family="Subway Ticker", size=20))
+                fight_info.pack(side="top", fill="both", expand=True, pady=(25, 0))
+                
+                round = item.get('round', '')
+                
+                round_label = ctk.CTkLabel(info_frame, text=round, font=ctk.CTkFont(family="Subway Ticker", size=16))
+                round_label.pack(side="top", fill="both", expand=True, pady=(0, 25))
+            else:
+                info_frame = ctk.CTkFrame(frame, fg_color=frame.cget("fg_color"))
+                info_frame.pack(side="top", fill="both", expand=True)
+            
+                fight_info = ctk.CTkLabel(info_frame, text=f"{item.get('score', '')}", font=ctk.CTkFont(family="Subway Ticker", size=20))
+                fight_info.pack(side="top", fill="both", expand=True)
+
 
     def format_game_time(self, game_time):
         try:
@@ -148,11 +199,16 @@ class SportsFrame(ctk.CTkFrame):
         except ValueError:
             return game_time
 
-    def load_image(self, url):
+    def load_image(self, url, opacity=1.0):
         try:
             response = requests.get(url)
             image_data = response.content
-            image = Image.open(BytesIO(image_data))
+            image = Image.open(BytesIO(image_data)).convert("RGBA")
+            
+            alpha = image.split()[3]
+            alpha = ImageEnhance.Brightness(alpha).enhance(opacity)
+            image.putalpha(alpha)
+            
             image = image.resize((75, 75), Image.ANTIALIAS)
             return ImageTk.PhotoImage(image)
         except Exception as e:
